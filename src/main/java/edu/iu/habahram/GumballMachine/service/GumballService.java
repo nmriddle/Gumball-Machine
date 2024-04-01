@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class GumballService implements IGumballService{
+public class GumballService implements IGumballService {
 
     IGumballRepository gumballRepository;
 
@@ -24,7 +24,7 @@ public class GumballService implements IGumballService{
         GumballMachineRecord record = gumballRepository.findById(id);
         IGumballMachine machine = new GumballMachine(record.getId(), record.getState(), record.getCount());
         TransitionResult result = machine.insertQuarter();
-        if(result.succeeded()) {
+        if (result.succeeded()) {
             record.setState(result.stateAfter());
             record.setCount(result.countAfter());
             save(record);
@@ -33,16 +33,31 @@ public class GumballService implements IGumballService{
     }
 
     @Override
-    public TransitionResult ejectQuarter(String id) {
-        return null;
+    public TransitionResult ejectQuarter(String id) throws IOException {
+        GumballMachineRecord record = gumballRepository.findById(id);
+        IGumballMachine machine = new GumballMachine(record.getId(), record.getState(), record.getCount());
+        TransitionResult result = machine.insertQuarter();
+        if (result.succeeded()) {
+            record.setState(result.stateAfter());
+            record.setCount(result.countAfter());
+            save(record);
+        }
+        return result;
     }
 
     @Override
-    public TransitionResult turnCrank(String id) {
-        return null;
+    public TransitionResult turnCrank(String id) throws IOException {
+        GumballMachineRecord record = gumballRepository.findById(id);
+        IGumballMachine machine = new GumballMachine(record.getId(), record.getState(), record.getCount());
+        TransitionResult result = machine.insertQuarter();
+        if(result.succeeded()) {
+            record.setState(result.stateAfter());
+            record.setCount(result.countAfter());
+            save(record);
+        }
+        return result;
     }
 
-    
 
     @Override
     public List<GumballMachineRecord> findAll() throws IOException {

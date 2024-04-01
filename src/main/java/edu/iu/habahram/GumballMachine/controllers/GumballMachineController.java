@@ -3,7 +3,6 @@ package edu.iu.habahram.GumballMachine.controllers;
 import edu.iu.habahram.GumballMachine.model.GumballMachineRecord;
 import edu.iu.habahram.GumballMachine.model.TransitionRequest;
 import edu.iu.habahram.GumballMachine.model.TransitionResult;
-import edu.iu.habahram.GumballMachine.repository.IGumballRepository;
 import edu.iu.habahram.GumballMachine.service.IGumballService;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +27,7 @@ public class GumballMachineController {
             throw new RuntimeException(e);
         }
     }
+
     @PostMapping
     public String addOrUpdate(@RequestBody GumballMachineRecord record) {
         try {
@@ -45,4 +45,14 @@ public class GumballMachineController {
             throw new RuntimeException(e);
         }
     }
+
+    @PutMapping("/eject-quarter")
+    public TransitionResult ejectQuarter(@RequestBody TransitionRequest transitionRequest) {
+        try {
+            return gumballService.ejectQuarter(transitionRequest.id());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
