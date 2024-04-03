@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class GumballService implements IGumballService {
@@ -21,36 +22,24 @@ public class GumballService implements IGumballService {
 
     @Override
     public TransitionResult insertQuarter(String id) throws IOException {
-        GumballMachineRecord record = gumballRepository.findById(id);
-        IGumballMachine machine = new GumballMachine(record.getId(), record.getState(), record.getCount());
-        TransitionResult result = machine.insertQuarter();
-        if (result.succeeded()) {
-            record.setState(result.stateAfter());
-            record.setCount(result.countAfter());
-            save(record);
-        }
-        return result;
+        return performTransition(id, IGumballMachine::insertQuarter);
     }
 
     @Override
     public TransitionResult ejectQuarter(String id) throws IOException {
-        GumballMachineRecord record = gumballRepository.findById(id);
-        IGumballMachine machine = new GumballMachine(record.getId(), record.getState(), record.getCount());
-        TransitionResult result = machine.insertQuarter();
-        if (result.succeeded()) {
-            record.setState(result.stateAfter());
-            record.setCount(result.countAfter());
-            save(record);
-        }
-        return result;
+        return performTransition(id, IGumballMachine::ejectQuarter);
     }
 
     @Override
     public TransitionResult turnCrank(String id) throws IOException {
+        return performTransition(id, IGumballMachine::turnCrank);
+    }
+
+    private TransitionResult performTransition(String id, Function<IGumballMachine, TransitionResult> transition) throws IOException {
         GumballMachineRecord record = gumballRepository.findById(id);
         IGumballMachine machine = new GumballMachine(record.getId(), record.getState(), record.getCount());
-        TransitionResult result = machine.insertQuarter();
-        if(result.succeeded()) {
+        TransitionResult result = transition.apply(machine);
+        if (result.succeeded()) {
             record.setState(result.stateAfter());
             record.setCount(result.countAfter());
             save(record);
