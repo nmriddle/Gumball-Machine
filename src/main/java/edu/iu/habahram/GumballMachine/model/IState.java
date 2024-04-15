@@ -10,4 +10,8 @@ public interface IState {
     TransitionResult dispense();
 
     String getTheName();
+
+
+    TransitionResult refill(int numGumballs);
+
 }
